@@ -14,6 +14,7 @@ report   :; forge clean && forge test --gas-report | sed -e/╭/\{ -e:1 -en\;b1 
 
 # Deploy and Verify Payload
 deploy-payload :; forge script script/DeployProposalPayload.s.sol:DeployProposalPayload --rpc-url ${RPC_MAINNET_URL} --broadcast --private-key ${PRIVATE_KEY} --verify --etherscan-api-key ${ETHERSCAN_API_KEY} -vvvv
+deploy-payload-polygon :; forge script script/DeployProposalPayload.s.sol:DeployProposalPayload --rpc-url ${RPC_MAINNET_URL} --broadcast --private-key ${PRIVATE_KEY} --verify --etherscan-api-key ${ETHERSCAN_API_KEY} -vvvv
 verify-payload :; forge script script/DeployProposalPayload.s.sol:DeployProposalPayload --rpc-url ${RPC_MAINNET_URL} --verify --etherscan-api-key ${ETHERSCAN_API_KEY} -vvvv
 
 # Deploy Proposal
@@ -21,7 +22,7 @@ deploy-proposal :; forge script script/DeployMainnetProposal.s.sol:DeployProposa
 
 # Clean & lint
 clean    :; forge clean
-lint     :; npx prettier --write src/**/*.sol
+lint     :; npx prettier --write */*.sol */*/*.sol
 
 # Defaults to -v if no V=<{1,2,3,4,5} specified
 define compute_test_verbosity
