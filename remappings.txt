@@ -2,3 +2,6 @@
 @openzeppelin=lib/openzeppelin-contracts/contracts/
 @aave-address-book=lib/aave-address-book/src/
 @aave-helpers=lib/aave-helpers/src/
+@governance-crosschain-bridges=lib/governance-crosschain-bridges/contracts/
+@aave-v3-core=lib/aave-address-book/lib/aave-v3-core/contracts/
+@aave-v2=lib/protocol-v2/contracts/
