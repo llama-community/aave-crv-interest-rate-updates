@@ -1,6 +1,73 @@
-# AAVE Governance Forge Template
+# BAL Interest Rate Curve Upgrade
 
-A template for creating AAVE governance Proposal payload contracts.
+This repository contains the payload to update the AAVE V2 Mainnet BAL Liquidity Pool interest rate strategy, AAVE V2 Polygon BAL Liquidity Pool interest rate strategy and the AAVE V3 Polygon BAL Liquidity Pool interest rate strategy as well as the borrow cap on this pool.
+
+## Specification
+
+The code is split in two proposals, one for Mainnet and one for Polygon. The Proposal Payload does the following:
+
+1. Sets the new interest rate strategy address.
+
+The new interest rate strategy is deployed here: https://etherscan.io/address/0x04c28D6fE897859153eA753f986cc249Bf064f71
+
+The Proposal Payload for Polygon does the following:
+
+1. Sets the new interest rate strategy address for v2.
+
+The new interest rate strategy is deployed here: https://etherscan.io/address/0x80cb7e9E015C5331bF34e06de62443d070FD6654
+
+2. Sets the new interest rate strategy address for v3.
+
+The new interest rate strategy is deployed here: https://etherscan.io/address/0x4b8D3277d49E114C8F2D6E0B2eD310e29226fe16
+
+3. Sets the borrow cap for v3 at: 256,140. The supply cap does not change.
+
+The interest rate changes are as follows:
+
+```
+==========================================
+| Parameter	   Current (%)	Proposed (%)
+==========================================
+| Uoptimal	  |   45       |  80     |
+------------------------------------------
+| Base	          |   0        |  3      |
+------------------------------------------
+| VARIABLE RATES                         |
+------------------------------------------
+| Slope1	  |   7.0      |   14.0  |
+------------------------------------------
+| Slope2	  |   300      |   150    |
+------------------------------------------
+```
+
+\*\* Please note the BAL pools do not offer stable rate borrowing and those rates have not been updated from their previous strategies.
+
+The function used to set the strategy comes from the `@aave-address-book` library
+
+```
+  /**
+   * @dev Sets the interest rate strategy of a reserve
+   * @param asset The address of the underlying asset of the reserve
+   * @param rateStrategyAddress The new address of the interest strategy contract
+   **/
+  function setReserveInterestRateStrategyAddress(
+    address asset,
+    address rateStrategyAddress
+  ) external;
+```
+
+2. Sets the new reserve factor for the liquidity pool:
+
+The function used to set the borrow cap comes from the `@aave-address-book` library
+
+```
+/**
+   * @notice Updates the borrow cap of a reserve.
+   * @param asset The address of the underlying asset of the reserve
+   * @param newBorrowCap The new borrow cap of the reserve
+   **/
+  function setBorrowCap(address asset, uint256 newBorrowCap) external;
+```
 
 ## Installation
 
