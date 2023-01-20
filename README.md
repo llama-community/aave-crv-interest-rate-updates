@@ -1,6 +1,6 @@
-# BAL Interest Rate Curve Upgrade
+# CRV Interest Rate Curve Upgrade
 
-This repository contains the payload to update the AAVE V2 Mainnet BAL Liquidity Pool interest rate strategy, AAVE V2 Polygon BAL Liquidity Pool interest rate strategy and the AAVE V3 Polygon BAL Liquidity Pool interest rate strategy as well as the borrow cap on this pool.
+This repository contains the payload to update the AAVE V2 Mainnet CRV Liquidity Pool interest rate strategy, AAVE V2 Polygon CRV Liquidity Pool interest rate strategy and the AAVE V3 Polygon CRV Liquidity Pool interest rate strategy as well as the borrow cap, supply cap and reserve factor on this pool.
 
 ## Specification
 
@@ -20,7 +20,11 @@ The new interest rate strategy is deployed here: https://etherscan.io/address/0x
 
 The new interest rate strategy is deployed here: https://etherscan.io/address/0x4b8D3277d49E114C8F2D6E0B2eD310e29226fe16
 
-3. Sets the borrow cap for v3 at: 256,140. The supply cap does not change.
+3. Sets the borrow cap for v3 at: 1,012,720.
+
+4. Sets the supply cap for v3 at: 1,125,240.
+
+5. Sets the reserve factor for v3 at: 2000.
 
 The interest rate changes are as follows:
 
@@ -36,11 +40,11 @@ The interest rate changes are as follows:
 ------------------------------------------
 | Slope1	  |   7.0      |   14.0  |
 ------------------------------------------
-| Slope2	  |   300      |   150    |
+| Slope2	  |   300      |   150   |
 ------------------------------------------
 ```
 
-\*\* Please note the BAL pools do not offer stable rate borrowing and those rates have not been updated from their previous strategies.
+\*\* Please note the CRV pools do not offer stable rate borrowing and those rates have not been updated from their previous strategies.
 
 The function used to set the strategy comes from the `@aave-address-book` library
 
@@ -56,7 +60,7 @@ The function used to set the strategy comes from the `@aave-address-book` librar
   ) external;
 ```
 
-2. Sets the new reserve factor for the liquidity pool:
+2. Sets the new borrow cap factor for the liquidity pool:
 
 The function used to set the borrow cap comes from the `@aave-address-book` library
 
@@ -67,6 +71,28 @@ The function used to set the borrow cap comes from the `@aave-address-book` libr
    * @param newBorrowCap The new borrow cap of the reserve
    **/
   function setBorrowCap(address asset, uint256 newBorrowCap) external;
+```
+
+3. Sets the new supply cap for the liquidity pool:
+
+```
+/**
+   * @notice Updates the supply cap of a reserve.
+   * @param asset The address of the underlying asset of the reserve
+   * @param newSupplyCap The new supply cap of the reserve
+   */
+  function setSupplyCap(address asset, uint256 newSupplyCap) external;
+```
+
+4. Sets the new reserve factor for the liquidity pool:
+
+```
+/**
+   * @notice Updates the reserve factor of a reserve.
+   * @param asset The address of the underlying asset of the reserve
+   * @param newReserveFactor The new reserve factor of the reserve
+   */
+  function setReserveFactor(address asset, uint256 newReserveFactor) external;
 ```
 
 ## Installation

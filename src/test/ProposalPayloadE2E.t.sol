@@ -47,8 +47,8 @@ contract ProposalPayloadE2ETest is ProtocolV3TestBase {
     address public constant POLYGON_BRIDGE_EXECUTOR = 0xdc9A35B16DB4e126cFeDC41322b3a36454B1F772;
 
     // Underlying
-    address public constant BAL = 0xba100000625a3754423978a60c9317c58a424e3D;
-    address public constant BAL_POLYGON = 0x9a71012B13CA4d3D0Cdc72A177DF3ef03b0E76A3;
+    address public constant CRV = 0xD533a949740bb3306d119CC777fa900bA034cd52;
+    address public constant CRV_POLYGON = 0x172370d5Cd63279eFa6d502DAB29171933a610AF;
 
     string internal ETHEREUM = AaveAddressBookV2.AaveV2Ethereum;
     string internal POLYGON = AaveAddressBookV2.AaveV2Polygon;
@@ -118,14 +118,14 @@ contract ProposalPayloadE2ETest is ProtocolV3TestBase {
         ReserveConfigV2[] memory allConfigsEthereum = AaveV2Helpers._getReservesConfigs(false, ETHEREUM);
 
         ReserveConfigV2 memory expectedConfig = ReserveConfigV2({
-            symbol: "BAL",
-            underlying: BAL,
+            symbol: "CRV",
+            underlying: CRV,
             aToken: address(0), // Mock, no-validation because of the "dynamic" deployment on proposal execution
             variableDebtToken: address(0), // Mock, no-validation because of the "dynamic" deployment on proposal exec
             stableDebtToken: address(0), // Mock, no-validation because of the "dynamic" deployment on proposal execution
             decimals: 18,
-            ltv: 6500,
-            liquidationThreshold: 7000,
+            ltv: 5200,
+            liquidationThreshold: 5800,
             liquidationBonus: 10800,
             reserveFactor: 2000,
             usageAsCollateralEnabled: true,
@@ -133,13 +133,13 @@ contract ProposalPayloadE2ETest is ProtocolV3TestBase {
             interestRateStrategy: NEW_INTEREST_RATE_STRATEGY_ETHEREUM,
             stableBorrowRateEnabled: false,
             isActive: true,
-            isFrozen: true
+            isFrozen: false
         });
 
         AaveV2Helpers._validateReserveConfig(expectedConfig, allConfigsEthereum);
 
         AaveV2Helpers._validateInterestRateStrategy(
-            BAL,
+            CRV,
             ProposalPayload(proposalPayload).INTEREST_RATE_STRATEGY(),
             InterestStrategyValuesV2({
                 excessUtilization: 20 * (AaveV2Helpers.RAY / 100),
@@ -163,8 +163,8 @@ contract ProposalPayloadE2ETest is ProtocolV3TestBase {
         ReserveConfigV2[] memory allConfigsPolygon = AaveV2Helpers._getReservesConfigs(false, POLYGON);
 
         ReserveConfigV2 memory expectedConfigPolygon = ReserveConfigV2({
-            symbol: "BAL",
-            underlying: BAL_POLYGON,
+            symbol: "CRV",
+            underlying: CRV_POLYGON,
             aToken: address(0), // Mock, no-validation because of the "dynamic" deployment on proposal execution
             variableDebtToken: address(0), // Mock, no-validation because of the "dynamic" deployment on proposal exec
             stableDebtToken: address(0), // Mock, no-validation because of the "dynamic" deployment on proposal execution
@@ -184,7 +184,7 @@ contract ProposalPayloadE2ETest is ProtocolV3TestBase {
         AaveV2Helpers._validateReserveConfig(expectedConfigPolygon, allConfigsPolygon);
 
         AaveV2Helpers._validateInterestRateStrategy(
-            BAL_POLYGON,
+            CRV_POLYGON,
             ProposalPayloadPolygon(proposalPayloadPolygon).INTEREST_RATE_STRATEGY(),
             InterestStrategyValuesV2({
                 excessUtilization: 20 * (AaveV2Helpers.RAY / 100),
@@ -208,27 +208,27 @@ contract ProposalPayloadE2ETest is ProtocolV3TestBase {
         ReserveConfig[] memory allConfigsAfterV3Polygon = _getReservesConfigs(AaveV3Polygon.POOL);
 
         ReserveConfig memory expectedConfigPolygonV3 = ReserveConfig({
-            symbol: "BAL",
-            underlying: BAL_POLYGON,
+            symbol: "CRV",
+            underlying: CRV_POLYGON,
             aToken: address(0), // Mock, as they don't get validated, because of the "dynamic" deployment on proposal execution
             variableDebtToken: address(0), // Mock, as they don't get validated, because of the "dynamic" deployment on proposal execution
             stableDebtToken: address(0), // Mock, as they don't get validated, because of the "dynamic" deployment on proposal execution
             decimals: 18,
-            ltv: 2000,
-            liquidationThreshold: 4500,
-            liquidationBonus: 11000,
+            ltv: 7500,
+            liquidationThreshold: 8000,
+            liquidationBonus: 10500,
             liquidationProtocolFee: 1000,
-            reserveFactor: 2000,
+            reserveFactor: proposalPayloadPolygon.NEW_RESERVE_FACTOR(),
             usageAsCollateralEnabled: true,
             borrowingEnabled: true,
-            interestRateStrategy: _findReserveConfigBySymbol(allConfigsAfterV3Polygon, "BAL").interestRateStrategy,
+            interestRateStrategy: _findReserveConfigBySymbol(allConfigsAfterV3Polygon, "CRV").interestRateStrategy,
             stableBorrowRateEnabled: false,
             isActive: true,
             isFrozen: false,
             isSiloed: false,
             isBorrowableInIsolation: false,
             isFlashloanable: false,
-            supplyCap: 284_600,
+            supplyCap: proposalPayloadPolygon.NEW_SUPPLY_CAP_V3(),
             borrowCap: proposalPayloadPolygon.NEW_BORROW_CAP_V3(),
             debtCeiling: 0,
             eModeCategory: 0
@@ -237,7 +237,7 @@ contract ProposalPayloadE2ETest is ProtocolV3TestBase {
         _validateReserveConfig(expectedConfigPolygonV3, allConfigsAfterV3Polygon);
 
         _validateInterestRateStrategy(
-            _findReserveConfigBySymbol(allConfigsAfterV3Polygon, "BAL").interestRateStrategy,
+            _findReserveConfigBySymbol(allConfigsAfterV3Polygon, "CRV").interestRateStrategy,
             ProposalPayloadPolygon(proposalPayloadPolygon).INTEREST_RATE_STRATEGY_V3(),
             InterestStrategyValues({
                 addressesProvider: address(AaveV3Polygon.POOL_ADDRESSES_PROVIDER),
@@ -257,7 +257,7 @@ contract ProposalPayloadE2ETest is ProtocolV3TestBase {
 
     function testUtilizationAtZeroPercentEthereum() public {
         (uint256 liqRate, uint256 stableRate, uint256 varRate) = strategy.calculateInterestRates(
-            BAL,
+            CRV,
             100 * 1e18,
             0,
             0,
@@ -273,7 +273,7 @@ contract ProposalPayloadE2ETest is ProtocolV3TestBase {
 
     function testUtilizationAtOneHundredPercentEthereum() public {
         (uint256 liqRate, uint256 stableRate, uint256 varRate) = strategy.calculateInterestRates(
-            BAL,
+            CRV,
             0,
             0,
             100 * 1e18,
@@ -289,7 +289,7 @@ contract ProposalPayloadE2ETest is ProtocolV3TestBase {
 
     function testUtilizationAtUOptimalEthereum() public {
         (uint256 liqRate, uint256 stableRate, uint256 varRate) = strategy.calculateInterestRates(
-            BAL,
+            CRV,
             20 * 1e18,
             0,
             80 * 1e18,
@@ -308,7 +308,7 @@ contract ProposalPayloadE2ETest is ProtocolV3TestBase {
     function testUtilizationAtZeroPercentPolygonV2() public {
         vm.selectFork(polygonFork);
         (uint256 liqRate, uint256 stableRate, uint256 varRate) = strategyPolygon.calculateInterestRates(
-            BAL,
+            CRV_POLYGON,
             100 * 1e18,
             0,
             0,
@@ -325,7 +325,7 @@ contract ProposalPayloadE2ETest is ProtocolV3TestBase {
     function testUtilizationAtOneHundredPercentPolygon() public {
         vm.selectFork(polygonFork);
         (uint256 liqRate, uint256 stableRate, uint256 varRate) = strategyPolygon.calculateInterestRates(
-            BAL,
+            CRV_POLYGON,
             0,
             0,
             100 * 1e18,
@@ -342,7 +342,7 @@ contract ProposalPayloadE2ETest is ProtocolV3TestBase {
     function testUtilizationAtUOptimalPolygon() public {
         vm.selectFork(polygonFork);
         (uint256 liqRate, uint256 stableRate, uint256 varRate) = strategyPolygon.calculateInterestRates(
-            BAL,
+            CRV_POLYGON,
             20 * 1e18,
             0,
             80 * 1e18,
@@ -367,8 +367,8 @@ contract ProposalPayloadE2ETest is ProtocolV3TestBase {
             totalVariableDebt: 0,
             averageStableBorrowRate: 0,
             reserveFactor: 2000,
-            reserve: BAL_POLYGON,
-            aToken: 0x8ffDf2DE812095b1D19CB146E4c004587C0A0692
+            reserve: CRV_POLYGON,
+            aToken: 0x513c7E3a9c69cA3e22550eF58AC1C0088e918FFf
         });
         (uint256 liqRate, uint256 stableRate, uint256 varRate) = strategyPolygonV3.calculateInterestRates(params);
 
@@ -383,17 +383,17 @@ contract ProposalPayloadE2ETest is ProtocolV3TestBase {
         DataTypes.CalculateInterestRatesParams memory params = DataTypes.CalculateInterestRatesParams({
             unbacked: 0,
             liquidityAdded: 0,
-            liquidityTaken: 132506495642266527391889,
+            liquidityTaken: 452015246342652694728961,
             totalStableDebt: 0,
             totalVariableDebt: 5e18,
             averageStableBorrowRate: 0,
             reserveFactor: 2000,
-            reserve: BAL_POLYGON,
-            aToken: 0x8ffDf2DE812095b1D19CB146E4c004587C0A0692
+            reserve: CRV_POLYGON,
+            aToken: 0x513c7E3a9c69cA3e22550eF58AC1C0088e918FFf
         });
         (uint256 liqRate, uint256 stableRate, uint256 varRate) = strategyPolygonV3.calculateInterestRates(params);
 
-        // At max borrowed, variable rate should be 167% and stable rate should be 16%. (No stable borrowing on BAL)
+        // At max borrowed, variable rate should be 167% and stable rate should be 16%. (No stable borrowing on CRV)
         assertEq(liqRate, 1336000000000000000000000000);
         assertEq(stableRate, 16 * (AaveV2Helpers.RAY / 100));
         assertEq(varRate, 167 * (AaveV2Helpers.RAY / 100));
@@ -403,14 +403,14 @@ contract ProposalPayloadE2ETest is ProtocolV3TestBase {
         vm.selectFork(polygonFork);
         DataTypes.CalculateInterestRatesParams memory params = DataTypes.CalculateInterestRatesParams({
             unbacked: 0,
-            liquidityAdded: 7493504357733472608111,
-            liquidityTaken: 112000000000000000000000,
+            liquidityAdded: 8753657347305271039,
+            liquidityTaken: 361619200000000000000000,
             totalStableDebt: 0,
-            totalVariableDebt: 112000000000000000000000,
+            totalVariableDebt: 361619200000000000000000,
             averageStableBorrowRate: 0,
             reserveFactor: 2000,
-            reserve: BAL_POLYGON,
-            aToken: 0x8ffDf2DE812095b1D19CB146E4c004587C0A0692
+            reserve: CRV_POLYGON,
+            aToken: 0x513c7E3a9c69cA3e22550eF58AC1C0088e918FFf
         });
 
         (uint256 liqRate, uint256 stableRate, uint256 varRate) = strategyPolygonV3.calculateInterestRates(params);

@@ -6,22 +6,26 @@ import {AaveV2Polygon} from "@aave-address-book/AaveV2Polygon.sol";
 import {AaveV3Polygon} from "@aave-address-book/AaveV3Polygon.sol";
 
 /**
- * @title BAL Interest Rate Curve Upgrade
+ * @title CRV Interest Rate Curve Upgrade
  * @author Llama
- * @notice Amend BAL interest rate parameters on the Aave Polygon v2 and Aave Polygon v3 liquidity pools.
- * Governance Forum Post: https://governance.aave.com/t/arfc-bal-interest-rate-curve-upgrade/10484/10
- * Snapshot: https://snapshot.org/#/aave.eth/proposal/0xceb72907ec281318c0271039c6cbde07d057e368aff8d8b75ad90389f64bf83c
+ * @notice Amend CRV interest rate parameters on the Aave Polygon v2 and Aave Polygon v3 liquidity pools.
+ * Governance Forum Post: https://governance.aave.com/t/arfc-crv-interest-rate-curve-upgrade/11337
+ * Snapshot: https://snapshot.org/#/aave.eth/proposal/0x2cb10cfb57a79bb97c3aed1cc3e9847227fb0f6a843916921ae315b9d8ad11d3
  */
 contract ProposalPayloadPolygon {
     address public constant INTEREST_RATE_STRATEGY_V3 = 0x4b8D3277d49E114C8F2D6E0B2eD310e29226fe16;
     address public constant INTEREST_RATE_STRATEGY = 0x80cb7e9E015C5331bF34e06de62443d070FD6654;
-    address public constant BAL = 0x9a71012B13CA4d3D0Cdc72A177DF3ef03b0E76A3;
-    uint256 public constant NEW_BORROW_CAP_V3 = 256_140;
+    address public constant CRV = 0x172370d5Cd63279eFa6d502DAB29171933a610AF;
+    uint256 public constant NEW_BORROW_CAP_V3 = 1_012_720;
+    uint256 public constant NEW_SUPPLY_CAP_V3 = 1_125_240;
+    uint256 public constant NEW_RESERVE_FACTOR = 2000;
 
     /// @notice The AAVE governance executor calls this function to implement the proposal on Polygon.
     function execute() external {
-        AaveV2Polygon.POOL_CONFIGURATOR.setReserveInterestRateStrategyAddress(BAL, INTEREST_RATE_STRATEGY);
-        AaveV3Polygon.POOL_CONFIGURATOR.setReserveInterestRateStrategyAddress(BAL, INTEREST_RATE_STRATEGY_V3);
-        AaveV3Polygon.POOL_CONFIGURATOR.setBorrowCap(BAL, NEW_BORROW_CAP_V3);
+        AaveV2Polygon.POOL_CONFIGURATOR.setReserveInterestRateStrategyAddress(CRV, INTEREST_RATE_STRATEGY);
+        AaveV3Polygon.POOL_CONFIGURATOR.setReserveInterestRateStrategyAddress(CRV, INTEREST_RATE_STRATEGY_V3);
+        AaveV3Polygon.POOL_CONFIGURATOR.setBorrowCap(CRV, NEW_BORROW_CAP_V3);
+        AaveV3Polygon.POOL_CONFIGURATOR.setSupplyCap(CRV, NEW_SUPPLY_CAP_V3);
+        AaveV3Polygon.POOL_CONFIGURATOR.setReserveFactor(CRV, NEW_RESERVE_FACTOR);
     }
 }

@@ -4,18 +4,18 @@ pragma solidity 0.8.17;
 import {AaveV2Ethereum} from "@aave-address-book/AaveV2Ethereum.sol";
 
 /**
- * @title BAL Interest Rate Curve Upgrade
+ * @title CRV Interest Rate Curve Upgrade
  * @author Llama
- * @notice Amend BAL interest rate parameters on the Aave Ethereum v2liquidity pool.
- * Governance Forum Post: https://governance.aave.com/t/arfc-bal-interest-rate-curve-upgrade/10484/10
- * Snapshot: https://snapshot.org/#/aave.eth/proposal/0xceb72907ec281318c0271039c6cbde07d057e368aff8d8b75ad90389f64bf83c
+ * @notice Amend CRV interest rate parameters on the Aave Ethereum v2liquidity pool.
+ * Governance Forum Post: https://governance.aave.com/t/arfc-crv-interest-rate-curve-upgrade/11337
+ * Snapshot: https://snapshot.org/#/aave.eth/proposal/0x2cb10cfb57a79bb97c3aed1cc3e9847227fb0f6a843916921ae315b9d8ad11d3
  */
 contract ProposalPayload {
     address public constant INTEREST_RATE_STRATEGY = 0x04c28D6fE897859153eA753f986cc249Bf064f71;
-    address public constant BAL = 0xba100000625a3754423978a60c9317c58a424e3D;
+    address public constant CRV = 0xD533a949740bb3306d119CC777fa900bA034cd52;
 
     /// @notice The AAVE governance executor calls this function to implement the proposal.
     function execute() external {
-        AaveV2Ethereum.POOL_CONFIGURATOR.setReserveInterestRateStrategyAddress(BAL, INTEREST_RATE_STRATEGY);
+        AaveV2Ethereum.POOL_CONFIGURATOR.setReserveInterestRateStrategyAddress(CRV, INTEREST_RATE_STRATEGY);
     }
 }
