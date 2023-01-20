@@ -17,6 +17,7 @@ import {IStateReceiver} from "@governance-crosschain-bridges/dependencies/polygo
 import {IDefaultInterestRateStrategy} from "@aave-v3-core/interfaces/IDefaultInterestRateStrategy.sol";
 import {AaveV2Helpers, InterestStrategyValues as InterestStrategyValuesV2, IReserveInterestRateStrategy as IReserveInterestRateStrategyV2, ReserveConfig as ReserveConfigV2} from "./utils/AaveV2Helpers.sol";
 import {AaveAddressBookV2} from "./utils/AaveAddressBookV2.sol";
+import {DataTypes} from "@aave-v3-core/protocol/libraries/types/DataTypes.sol";
 
 contract ProposalPayloadE2ETest is ProtocolV3TestBase {
     uint256 internal constant RAY = 1e27;
@@ -352,6 +353,71 @@ contract ProposalPayloadE2ETest is ProtocolV3TestBase {
         // At UOptimal, stable rate should be % and variable rate should be 14%.
         assertEq(liqRate, 108800000000000000000000000);
         assertEq(stableRate, 10 * (AaveV2Helpers.RAY / 100));
+        assertEq(varRate, 17 * (AaveV2Helpers.RAY / 100));
+    }
+
+    // Interest Strategy Polygon V3
+    function testUtilizationAtZeroPercentPolygonV3() public {
+        vm.selectFork(polygonFork);
+        DataTypes.CalculateInterestRatesParams memory params = DataTypes.CalculateInterestRatesParams({
+            unbacked: 0,
+            liquidityAdded: 10e18,
+            liquidityTaken: 0,
+            totalStableDebt: 0,
+            totalVariableDebt: 0,
+            averageStableBorrowRate: 0,
+            reserveFactor: 2000,
+            reserve: BAL_POLYGON,
+            aToken: 0x8ffDf2DE812095b1D19CB146E4c004587C0A0692
+        });
+        (uint256 liqRate, uint256 stableRate, uint256 varRate) = strategyPolygonV3.calculateInterestRates(params);
+
+        // At nothing borrowed, liquidity rate should be 0, variable rate should be 3% and stable rate should be 16%.
+        assertEq(liqRate, 0);
+        assertEq(stableRate, 16 * (AaveV2Helpers.RAY / 100));
+        assertEq(varRate, 3 * (AaveV2Helpers.RAY / 100));
+    }
+
+    function testUtilizationAtOneHundredPercentPolygonV3() public {
+        vm.selectFork(polygonFork);
+        DataTypes.CalculateInterestRatesParams memory params = DataTypes.CalculateInterestRatesParams({
+            unbacked: 0,
+            liquidityAdded: 0,
+            liquidityTaken: 132506495642266527391889,
+            totalStableDebt: 0,
+            totalVariableDebt: 5e18,
+            averageStableBorrowRate: 0,
+            reserveFactor: 2000,
+            reserve: BAL_POLYGON,
+            aToken: 0x8ffDf2DE812095b1D19CB146E4c004587C0A0692
+        });
+        (uint256 liqRate, uint256 stableRate, uint256 varRate) = strategyPolygonV3.calculateInterestRates(params);
+
+        // At max borrowed, variable rate should be 167% and stable rate should be 16%. (No stable borrowing on BAL)
+        assertEq(liqRate, 1336000000000000000000000000);
+        assertEq(stableRate, 16 * (AaveV2Helpers.RAY / 100));
+        assertEq(varRate, 167 * (AaveV2Helpers.RAY / 100));
+    }
+
+    function testUtilizationAtUOptimalPolygonV3() public {
+        vm.selectFork(polygonFork);
+        DataTypes.CalculateInterestRatesParams memory params = DataTypes.CalculateInterestRatesParams({
+            unbacked: 0,
+            liquidityAdded: 7493504357733472608111,
+            liquidityTaken: 112000000000000000000000,
+            totalStableDebt: 0,
+            totalVariableDebt: 112000000000000000000000,
+            averageStableBorrowRate: 0,
+            reserveFactor: 2000,
+            reserve: BAL_POLYGON,
+            aToken: 0x8ffDf2DE812095b1D19CB146E4c004587C0A0692
+        });
+
+        (uint256 liqRate, uint256 stableRate, uint256 varRate) = strategyPolygonV3.calculateInterestRates(params);
+
+        // At UOptimal, stable rate should be 16% and variable rate should be 14%.
+        assertEq(liqRate, 108800000000000000000000000);
+        assertEq(stableRate, 16 * (AaveV2Helpers.RAY / 100));
         assertEq(varRate, 17 * (AaveV2Helpers.RAY / 100));
     }
 }
