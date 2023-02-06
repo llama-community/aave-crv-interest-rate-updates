@@ -163,6 +163,7 @@ contract ProposalPayloadE2ETest is ProtocolV3TestBase, TestWithExecutor {
 
     function testExecuteValidatePolygonV3() public {
         vm.selectFork(polygonFork);
+        createConfigurationSnapshot("pre-AaveV3Polygon-interestRateUpdate", AaveV3Polygon.POOL);
 
         _selectPayloadExecutor(AaveGovernanceV2.POLYGON_BRIDGE_EXECUTOR);
         _executePayload(address(proposalPayloadPolygon));
@@ -213,6 +214,8 @@ contract ProposalPayloadE2ETest is ProtocolV3TestBase, TestWithExecutor {
                 variableRateSlope2: 150 * (AaveV2Helpers.RAY / 100)
             })
         );
+
+        createConfigurationSnapshot("post-AaveV3Polygon-interestRateUpdate", AaveV3Polygon.POOL);
     }
 
     // Interest Strategy Ethereum
