@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import "@forge-std/Vm.sol";
-import "@forge-std/console.sol";
+import "forge-std/Vm.sol";
+import "forge-std/console.sol";
 import {AaveAddressBookV2} from "./AaveAddressBookV2.sol";
-import {TokenData} from "@aave-address-book/AaveV2.sol";
-import "@openzeppelin/token/ERC20/IERC20.sol";
+import {TokenData} from "aave-address-book/AaveV2.sol";
+import "openzeppelin/token/ERC20/IERC20.sol";
 
 struct ReserveTokens {
     address aToken;

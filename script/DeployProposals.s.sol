@@ -2,23 +2,21 @@
 
 pragma solidity 0.8.17;
 
-import "@forge-std/console.sol";
-import {Script} from "@forge-std/Script.sol";
-import {AaveGovernanceV2, IExecutorWithTimelock} from "@aave-address-book/AaveGovernanceV2.sol";
+import {Script} from "forge-std/Script.sol";
+import {AaveGovernanceV2, IExecutorWithTimelock} from "aave-address-book/AaveGovernanceV2.sol";
 
 library DeployProposals {
-    address internal constant CROSSCHAIN_FORWARDER_POLYGON = address(0x158a6bC04F0828318821baE797f50B0A1299d45b);
-
     function _deployMainnetProposal(
         address payload,
         address payloadPolygon,
         bytes32 ipfsHash
     ) internal returns (uint256 proposalId) {
         require(payload != address(0), "ERROR: PAYLOAD can't be address(0)");
+        require(payloadPolygon != address(0), "ERROR: PAYLOAD POLYGON can't be address(0)");
         require(ipfsHash != bytes32(0), "ERROR: IPFS_HASH can't be bytes32(0)");
         address[] memory targets = new address[](2);
         targets[0] = payload;
-        targets[1] = CROSSCHAIN_FORWARDER_POLYGON;
+        targets[1] = AaveGovernanceV2.CROSSCHAIN_FORWARDER_POLYGON;
         uint256[] memory values = new uint256[](2);
         values[0] = 0;
         values[1] = 0;

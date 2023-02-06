@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.17;
 
-import {AaveV2Ethereum} from "@aave-address-book/AaveV2Ethereum.sol";
+import {AaveV2Ethereum} from "aave-address-book/AaveV2Ethereum.sol";
 
 /**
  * @title CRV Interest Rate Curve Upgrade
@@ -12,10 +12,12 @@ import {AaveV2Ethereum} from "@aave-address-book/AaveV2Ethereum.sol";
  */
 contract ProposalPayload {
     address public constant INTEREST_RATE_STRATEGY = 0x04c28D6fE897859153eA753f986cc249Bf064f71;
-    address public constant CRV = 0xD533a949740bb3306d119CC777fa900bA034cd52;
 
     /// @notice The AAVE governance executor calls this function to implement the proposal.
     function execute() external {
-        AaveV2Ethereum.POOL_CONFIGURATOR.setReserveInterestRateStrategyAddress(CRV, INTEREST_RATE_STRATEGY);
+        AaveV2Ethereum.POOL_CONFIGURATOR.setReserveInterestRateStrategyAddress(
+            AaveV2Ethereum.CRV_UNDERLYING,
+            INTEREST_RATE_STRATEGY
+        );
     }
 }

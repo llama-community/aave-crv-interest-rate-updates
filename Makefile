@@ -14,15 +14,19 @@ report   :; forge clean && forge test --gas-report | sed -e/╭/\{ -e:1 -en\;b1 
 
 # Deploy and Verify Payload
 deploy-payload :; forge script script/DeployProposalPayload.s.sol:DeployProposalPayload --rpc-url ${RPC_MAINNET_URL} --broadcast --private-key ${PRIVATE_KEY} --verify --etherscan-api-key ${ETHERSCAN_API_KEY} -vvvv
-deploy-payload-polygon :; forge script script/DeployProposalPayload.s.sol:DeployProposalPayload --rpc-url ${RPC_MAINNET_URL} --broadcast --private-key ${PRIVATE_KEY} --verify --etherscan-api-key ${ETHERSCAN_API_KEY} -vvvv
+deploy-payload-polygon :; forge script script/DeployProposalPayloadPolygon.s.sol:DeployProposalPayloadPolygon --rpc-url ${RPC_POLYGON_URL} --broadcast --private-key ${PRIVATE_KEY} --verify --etherscan-api-key ${POLYGONSCAN_API_KEY} -vvvv
 verify-payload :; forge script script/DeployProposalPayload.s.sol:DeployProposalPayload --rpc-url ${RPC_MAINNET_URL} --verify --etherscan-api-key ${ETHERSCAN_API_KEY} -vvvv
 
 # Deploy Proposal
-deploy-proposal :; forge script script/DeployMainnetProposal.s.sol:DeployProposal --rpc-url ${RPC_MAINNET_URL} --broadcast --private-key ${PRIVATE_KEY} -vvvv
+deploy-proposal :; forge script script/DeployProposals.s.sol:DeployProposal --rpc-url ${RPC_MAINNET_URL} --broadcast --private-key ${PRIVATE_KEY} -vvvv
 
 # Clean & lint
 clean    :; forge clean
 lint     :; npx prettier --write */*.sol */*/*.sol
+
+git-diff :
+	@mkdir -p diffs
+	@printf '%s\n%s\n%s\n' "\`\`\`diff" "$$(git diff --no-index --diff-algorithm=patience --ignore-space-at-eol ${before} ${after})" "\`\`\`" > diffs/${out}.md
 
 # Defaults to -v if no V=<{1,2,3,4,5} specified
 define compute_test_verbosity

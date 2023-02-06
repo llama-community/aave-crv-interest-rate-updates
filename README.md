@@ -20,7 +20,7 @@ The new interest rate strategy is deployed here: https://etherscan.io/address/0x
 
 The new interest rate strategy is deployed here: https://etherscan.io/address/0x4b8D3277d49E114C8F2D6E0B2eD310e29226fe16
 
-3. Sets the borrow cap for v3 at: 1,012,720.
+3. Sets the borrow cap for v3 at: 900,190.
 
 4. Sets the supply cap for v3 at: 1,125,240.
 
@@ -32,7 +32,7 @@ The interest rate changes are as follows:
 ==========================================
 | Parameter	   Current (%)	Proposed (%)
 ==========================================
-| Uoptimal	  |   45       |  80     |
+| Uoptimal	  |   45       |  75     |
 ------------------------------------------
 | Base	          |   0        |  3      |
 ------------------------------------------
@@ -40,13 +40,13 @@ The interest rate changes are as follows:
 ------------------------------------------
 | Slope1	  |   7.0      |   14.0  |
 ------------------------------------------
-| Slope2	  |   300      |   150   |
+| Slope2	  |   300      |   300   |
 ------------------------------------------
 ```
 
 \*\* Please note the CRV pools do not offer stable rate borrowing and those rates have not been updated from their previous strategies.
 
-The function used to set the strategy comes from the `@aave-address-book` library
+The function used to set the strategy comes from the `aave-address-book` library
 
 ```
   /**
@@ -62,7 +62,7 @@ The function used to set the strategy comes from the `@aave-address-book` librar
 
 2. Sets the new borrow cap factor for the liquidity pool:
 
-The function used to set the borrow cap comes from the `@aave-address-book` library
+The function used to set the borrow cap comes from the `aave-address-book` library
 
 ```
 /**
