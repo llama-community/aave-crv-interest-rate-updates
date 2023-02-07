@@ -228,7 +228,7 @@ contract ProposalPayloadV2E2ETest is ProtocolV2TestBase, TestWithExecutor {
         assertEq(varRate, 3 * (AaveV2Helpers.RAY / 100));
     }
 
-    function testUtilizationAtOneHundredPercentPolygon() public {
+    function testUtilizationAtOneHundredPercentPolygonV2() public {
         vm.selectFork(polygonFork);
         (uint256 liqRate, uint256 stableRate, uint256 varRate) = strategyPolygon.calculateInterestRates(
             CRV_POLYGON,
@@ -245,7 +245,7 @@ contract ProposalPayloadV2E2ETest is ProtocolV2TestBase, TestWithExecutor {
         assertEq(varRate, 3170000000000000000000000000);
     }
 
-    function testUtilizationAtUOptimalPolygon() public {
+    function testUtilizationAtUOptimalPolygonV2() public {
         vm.selectFork(polygonFork);
         (uint256 liqRate, uint256 stableRate, uint256 varRate) = strategyPolygon.calculateInterestRates(
             CRV_POLYGON,
