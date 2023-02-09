@@ -1,6 +1,5 @@
 forge-std=lib/forge-std/src/
-openzeppelin=lib/openzeppelin-contracts/contracts/
 aave-address-book=lib/aave-address-book/src/
 aave-helpers=lib/aave-helpers/src/
 aave-v3=lib/aave-address-book/lib/aave-v3-core/contracts/
-aave-v2=lib/protocol-v2/contracts/
+openzeppelin=lib/openzeppelin-contracts/contracts/

@@ -28,6 +28,16 @@ git-diff :
 	@mkdir -p diffs
 	@printf '%s\n%s\n%s\n' "\`\`\`diff" "$$(git diff --no-index --diff-algorithm=patience --ignore-space-at-eol ${before} ${after})" "\`\`\`" > diffs/${out}.md
 
+download :; cast etherscan-source --chain ${chain} -d src/etherscan/${chain}_${address} ${address}
+
+diff-strategies:
+	@echo "downloading source from etherscan"
+	# @make download chain=${chain} address=${address}
+	# @make download chain=${chain} address=${old_address}
+	forge flatten ./src/etherscan/${chain}_${address}/DefaultReserveInterestRateStrategy/lib/aave-v3-core/contracts/protocol/pool/DefaultReserveInterestRateStrategy.sol --output ./src/etherscan/${chain}_${address}/Flattened.sol
+	forge flatten ./src/etherscan/${chain}_${old_address}/DefaultReserveInterestRateStrategy/@aave/core-v3/contracts/protocol/pool/DefaultReserveInterestRateStrategy.sol --output ./src/etherscan/${chain}_${old_address}/Flattened.sol
+	@make git-diff before=./src/etherscan/${chain}_${old_address}/Flattened.sol after=./src/etherscan/${chain}_${address}/Flattened.sol out=${out}
+
 # Defaults to -v if no V=<{1,2,3,4,5} specified
 define compute_test_verbosity
 $(strip \

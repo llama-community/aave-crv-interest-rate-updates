@@ -18,7 +18,6 @@ contract ProposalPayloadPolygon {
     uint256 public constant NEW_SUPPLY_CAP_V3 = 1_125_240;
     uint256 public constant NEW_RESERVE_FACTOR = 2000;
 
-    /// @notice The AAVE governance executor calls this function to implement the proposal on Polygon.
     function execute() external {
         AaveV2Polygon.POOL_CONFIGURATOR.setReserveInterestRateStrategyAddress(
             AaveV2PolygonAssets.CRV_UNDERLYING,

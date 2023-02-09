@@ -11,10 +11,8 @@ import {AaveV2Ethereum, AaveV2EthereumAssets} from "aave-address-book/AaveV2Ethe
 import {AaveV2Polygon, AaveV2PolygonAssets} from "aave-address-book/AaveV2Polygon.sol";
 import {ProposalPayload} from "../ProposalPayload.sol";
 import {ProposalPayloadPolygon} from "../ProposalPayloadPolygon.sol";
-import {ProtocolV2TestBase} from "aave-helpers/ProtocolV2TestBase.sol";
-import {AaveV2Helpers, InterestStrategyValues as InterestStrategyValuesV2, IReserveInterestRateStrategy as IReserveInterestRateStrategyV2, ReserveConfig as ReserveConfigV2} from "./utils/AaveV2Helpers.sol";
-import {AaveAddressBookV2} from "./utils/AaveAddressBookV2.sol";
-import {DataTypes} from "aave-v3/protocol/libraries/types/DataTypes.sol";
+import {ProtocolV2TestBase, InterestStrategyValues, ReserveConfig} from "aave-helpers/ProtocolV2TestBase.sol";
+import {IDefaultInterestRateStrategy} from "aave-address-book/AaveV2.sol";
 
 contract ProposalPayloadV2E2ETest is ProtocolV2TestBase, TestWithExecutor {
     uint256 internal constant RAY = 1e27;
@@ -25,10 +23,10 @@ contract ProposalPayloadV2E2ETest is ProtocolV2TestBase, TestWithExecutor {
     ProposalPayload public proposalPayload;
 
     // Old Strategies
-    IReserveInterestRateStrategyV2 public constant OLD_INTEREST_RATE_STRATEGY_POLYGON =
-        IReserveInterestRateStrategyV2(0x9025C2d672afA29f43cB59b3035CaCfC401F5D62);
-    IReserveInterestRateStrategyV2 public constant OLD_INTEREST_RATE_STRATEGY_ETHEREUM =
-        IReserveInterestRateStrategyV2(0xfC0Eace19AA7498e0f36eF1607D282a8d6debbDd);
+    IDefaultInterestRateStrategy public constant OLD_INTEREST_RATE_STRATEGY_POLYGON =
+        IDefaultInterestRateStrategy(0x9025C2d672afA29f43cB59b3035CaCfC401F5D62);
+    IDefaultInterestRateStrategy public constant OLD_INTEREST_RATE_STRATEGY_ETHEREUM =
+        IDefaultInterestRateStrategy(0xfC0Eace19AA7498e0f36eF1607D282a8d6debbDd);
 
     // New Strategies
     address public NEW_INTEREST_RATE_STRATEGY_ETHEREUM;
@@ -38,12 +36,9 @@ contract ProposalPayloadV2E2ETest is ProtocolV2TestBase, TestWithExecutor {
     address public constant CRV = AaveV2EthereumAssets.CRV_UNDERLYING;
     address public constant CRV_POLYGON = AaveV2PolygonAssets.CRV_UNDERLYING;
 
-    string internal ETHEREUM = AaveAddressBookV2.AaveV2Ethereum;
-    string internal POLYGON = AaveAddressBookV2.AaveV2Polygon;
-
     // New Strategies
-    IReserveInterestRateStrategyV2 public strategy;
-    IReserveInterestRateStrategyV2 public strategyPolygon;
+    IDefaultInterestRateStrategy public strategy;
+    IDefaultInterestRateStrategy public strategyPolygon;
 
     function setUp() public {
         // To fork at a specific block: vm.createSelectFork(vm.rpcUrl("mainnet"), BLOCK_NUMBER);
@@ -54,12 +49,12 @@ contract ProposalPayloadV2E2ETest is ProtocolV2TestBase, TestWithExecutor {
         vm.selectFork(polygonFork);
         proposalPayloadPolygon = new ProposalPayloadPolygon();
         NEW_INTEREST_RATE_STRATEGY_POLYGON = proposalPayloadPolygon.INTEREST_RATE_STRATEGY();
-        strategyPolygon = IReserveInterestRateStrategyV2(NEW_INTEREST_RATE_STRATEGY_POLYGON);
+        strategyPolygon = IDefaultInterestRateStrategy(NEW_INTEREST_RATE_STRATEGY_POLYGON);
 
         vm.selectFork(mainnetFork);
         proposalPayload = new ProposalPayload();
         NEW_INTEREST_RATE_STRATEGY_ETHEREUM = proposalPayload.INTEREST_RATE_STRATEGY();
-        strategy = IReserveInterestRateStrategyV2(NEW_INTEREST_RATE_STRATEGY_ETHEREUM);
+        strategy = IDefaultInterestRateStrategy(NEW_INTEREST_RATE_STRATEGY_ETHEREUM);
     }
 
     function testExecuteValidateEthereum() public {
@@ -70,9 +65,9 @@ contract ProposalPayloadV2E2ETest is ProtocolV2TestBase, TestWithExecutor {
         _executePayload(address(proposalPayload));
 
         // Post-execution assertations
-        ReserveConfigV2[] memory allConfigsEthereum = AaveV2Helpers._getReservesConfigs(false, ETHEREUM);
+        ReserveConfig[] memory allConfigsEthereum = _getReservesConfigs(AaveV2Ethereum.POOL);
 
-        ReserveConfigV2 memory expectedConfig = ReserveConfigV2({
+        ReserveConfig memory expectedConfig = ReserveConfig({
             symbol: "CRV",
             underlying: CRV,
             aToken: address(0), // Mock, no-validation because of the "dynamic" deployment on proposal execution
@@ -91,21 +86,20 @@ contract ProposalPayloadV2E2ETest is ProtocolV2TestBase, TestWithExecutor {
             isFrozen: false
         });
 
-        AaveV2Helpers._validateReserveConfig(expectedConfig, allConfigsEthereum);
+        _validateReserveConfig(expectedConfig, allConfigsEthereum);
 
-        AaveV2Helpers._validateInterestRateStrategy(
-            CRV,
+        _validateInterestRateStrategy(
+            _findReserveConfigBySymbol(allConfigsEthereum, "CRV").interestRateStrategy,
             ProposalPayload(proposalPayload).INTEREST_RATE_STRATEGY(),
-            InterestStrategyValuesV2({
-                excessUtilization: 30 * (AaveV2Helpers.RAY / 100),
-                optimalUtilization: 70 * (AaveV2Helpers.RAY / 100),
-                baseVariableBorrowRate: 3 * (AaveV2Helpers.RAY / 100),
+            InterestStrategyValues({
+                addressesProvider: address(AaveV2Ethereum.POOL_ADDRESSES_PROVIDER),
+                optimalUsageRatio: 70 * (RAY / 100),
+                baseVariableBorrowRate: 3 * (RAY / 100),
                 stableRateSlope1: OLD_INTEREST_RATE_STRATEGY_ETHEREUM.stableRateSlope1(),
                 stableRateSlope2: OLD_INTEREST_RATE_STRATEGY_ETHEREUM.stableRateSlope2(),
-                variableRateSlope1: 14 * (AaveV2Helpers.RAY / 100),
-                variableRateSlope2: 300 * (AaveV2Helpers.RAY / 100)
-            }),
-            ETHEREUM
+                variableRateSlope1: 14 * (RAY / 100),
+                variableRateSlope2: 300 * (RAY / 100)
+            })
         );
 
         createConfigurationSnapshot("post-AaveV2Ethereum-interestRateUpdate", AaveV2Ethereum.POOL);
@@ -118,9 +112,9 @@ contract ProposalPayloadV2E2ETest is ProtocolV2TestBase, TestWithExecutor {
         _selectPayloadExecutor(AaveGovernanceV2.POLYGON_BRIDGE_EXECUTOR);
         _executePayload(address(proposalPayloadPolygon));
 
-        ReserveConfigV2[] memory allConfigsPolygon = AaveV2Helpers._getReservesConfigs(false, POLYGON);
+        ReserveConfig[] memory allConfigsPolygon = _getReservesConfigs(AaveV2Polygon.POOL);
 
-        ReserveConfigV2 memory expectedConfigPolygon = ReserveConfigV2({
+        ReserveConfig memory expectedConfigPolygon = ReserveConfig({
             symbol: "CRV",
             underlying: CRV_POLYGON,
             aToken: address(0), // Mock, no-validation because of the "dynamic" deployment on proposal execution
@@ -139,21 +133,20 @@ contract ProposalPayloadV2E2ETest is ProtocolV2TestBase, TestWithExecutor {
             isFrozen: true
         });
 
-        AaveV2Helpers._validateReserveConfig(expectedConfigPolygon, allConfigsPolygon);
+        _validateReserveConfig(expectedConfigPolygon, allConfigsPolygon);
 
-        AaveV2Helpers._validateInterestRateStrategy(
-            CRV_POLYGON,
+        _validateInterestRateStrategy(
+            _findReserveConfigBySymbol(allConfigsPolygon, "CRV").interestRateStrategy,
             ProposalPayloadPolygon(proposalPayloadPolygon).INTEREST_RATE_STRATEGY(),
-            InterestStrategyValuesV2({
-                excessUtilization: 30 * (AaveV2Helpers.RAY / 100),
-                optimalUtilization: 70 * (AaveV2Helpers.RAY / 100),
-                baseVariableBorrowRate: 3 * (AaveV2Helpers.RAY / 100),
+            InterestStrategyValues({
+                addressesProvider: address(AaveV2Polygon.POOL_ADDRESSES_PROVIDER),
+                optimalUsageRatio: 70 * (RAY / 100),
+                baseVariableBorrowRate: 3 * (RAY / 100),
                 stableRateSlope1: OLD_INTEREST_RATE_STRATEGY_POLYGON.stableRateSlope1(),
                 stableRateSlope2: OLD_INTEREST_RATE_STRATEGY_POLYGON.stableRateSlope2(),
-                variableRateSlope1: 14 * (AaveV2Helpers.RAY / 100),
-                variableRateSlope2: 300 * (AaveV2Helpers.RAY / 100)
-            }),
-            POLYGON
+                variableRateSlope1: 14 * (RAY / 100),
+                variableRateSlope2: 300 * (RAY / 100)
+            })
         );
 
         createConfigurationSnapshot("post-AaveV2Polygon-interestRateUpdate", AaveV2Polygon.POOL);
@@ -173,8 +166,8 @@ contract ProposalPayloadV2E2ETest is ProtocolV2TestBase, TestWithExecutor {
 
         // At nothing borrowed, liquidity rate should be 0, variable rate should be 3% and stable rate should be 3%.
         assertEq(liqRate, 0);
-        assertEq(stableRate, 3 * (AaveV2Helpers.RAY / 100));
-        assertEq(varRate, 3 * (AaveV2Helpers.RAY / 100));
+        assertEq(stableRate, 3 * (RAY / 100));
+        assertEq(varRate, 3 * (RAY / 100));
     }
 
     function testUtilizationAtOneHundredPercentEthereum() public {
@@ -205,8 +198,8 @@ contract ProposalPayloadV2E2ETest is ProtocolV2TestBase, TestWithExecutor {
 
         // At UOptimal, stable rate should be 13% and variable rate should be 17%.
         assertEq(liqRate, 95200000000000000000000000);
-        assertEq(stableRate, 13 * (AaveV2Helpers.RAY / 100));
-        assertEq(varRate, 17 * (AaveV2Helpers.RAY / 100));
+        assertEq(stableRate, 13 * (RAY / 100));
+        assertEq(varRate, 17 * (RAY / 100));
     }
 
     // Interest Strategy Polygon V2
@@ -224,8 +217,8 @@ contract ProposalPayloadV2E2ETest is ProtocolV2TestBase, TestWithExecutor {
 
         // At nothing borrowed, liquidity rate should be 0, variable rate should be 3% and stable rate should be 0%.
         assertEq(liqRate, 0);
-        assertEq(stableRate, 0 * (AaveV2Helpers.RAY / 100));
-        assertEq(varRate, 3 * (AaveV2Helpers.RAY / 100));
+        assertEq(stableRate, 0 * (RAY / 100));
+        assertEq(varRate, 3 * (RAY / 100));
     }
 
     function testUtilizationAtOneHundredPercentPolygonV2() public {
@@ -258,7 +251,7 @@ contract ProposalPayloadV2E2ETest is ProtocolV2TestBase, TestWithExecutor {
 
         // At UOptimal, stable rate should be 10% and variable rate should be 17%.
         assertEq(liqRate, 95200000000000000000000000);
-        assertEq(stableRate, 10 * (AaveV2Helpers.RAY / 100));
-        assertEq(varRate, 17 * (AaveV2Helpers.RAY / 100));
+        assertEq(stableRate, 10 * (RAY / 100));
+        assertEq(varRate, 17 * (RAY / 100));
     }
 }

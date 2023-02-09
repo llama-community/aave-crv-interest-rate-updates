@@ -13,7 +13,6 @@ import {AaveV2Ethereum, AaveV2EthereumAssets} from "aave-address-book/AaveV2Ethe
 contract ProposalPayload {
     address public constant INTEREST_RATE_STRATEGY = 0x005cb4DcEC37feE53CB4330A3A59e8B9F3dDC86e;
 
-    /// @notice The AAVE governance executor calls this function to implement the proposal.
     function execute() external {
         AaveV2Ethereum.POOL_CONFIGURATOR.setReserveInterestRateStrategyAddress(
             AaveV2EthereumAssets.CRV_UNDERLYING,

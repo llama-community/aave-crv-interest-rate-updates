@@ -12,9 +12,7 @@ import {AaveV3Polygon, AaveV3PolygonAssets} from "aave-address-book/AaveV3Polygo
 import {ProposalPayloadPolygon} from "../ProposalPayloadPolygon.sol";
 import {ProtocolV3TestBase, InterestStrategyValues, ReserveConfig, ReserveTokens, IERC20} from "aave-helpers/ProtocolV3TestBase.sol";
 import {IDefaultInterestRateStrategy} from "aave-v3/interfaces/IDefaultInterestRateStrategy.sol";
-import {AaveAddressBookV2} from "./utils/AaveAddressBookV2.sol";
 import {DataTypes} from "aave-v3/protocol/libraries/types/DataTypes.sol";
-import {AaveV2Helpers} from "./utils/AaveV2Helpers.sol";
 
 contract ProposalPayloadV3E2ETest is ProtocolV3TestBase, TestWithExecutor {
     uint256 internal constant RAY = 1e27;
@@ -88,14 +86,14 @@ contract ProposalPayloadV3E2ETest is ProtocolV3TestBase, TestWithExecutor {
             ProposalPayloadPolygon(proposalPayloadPolygon).INTEREST_RATE_STRATEGY_V3(),
             InterestStrategyValues({
                 addressesProvider: address(AaveV3Polygon.POOL_ADDRESSES_PROVIDER),
-                optimalUsageRatio: 70 * (AaveV2Helpers.RAY / 100),
-                optimalStableToTotalDebtRatio: 20 * (AaveV2Helpers.RAY / 100),
-                baseStableBorrowRate: 16 * (AaveV2Helpers.RAY / 100),
+                optimalUsageRatio: 70 * (RAY / 100),
+                optimalStableToTotalDebtRatio: 20 * (RAY / 100),
+                baseStableBorrowRate: 16 * (RAY / 100),
                 stableRateSlope1: OLD_INTEREST_RATE_STRATEGY_V3_POLYGON.getStableRateSlope1(),
                 stableRateSlope2: OLD_INTEREST_RATE_STRATEGY_V3_POLYGON.getStableRateSlope2(),
-                baseVariableBorrowRate: 3 * (AaveV2Helpers.RAY / 100),
-                variableRateSlope1: 14 * (AaveV2Helpers.RAY / 100),
-                variableRateSlope2: 300 * (AaveV2Helpers.RAY / 100)
+                baseVariableBorrowRate: 3 * (RAY / 100),
+                variableRateSlope1: 14 * (RAY / 100),
+                variableRateSlope2: 300 * (RAY / 100)
             })
         );
 
@@ -120,8 +118,8 @@ contract ProposalPayloadV3E2ETest is ProtocolV3TestBase, TestWithExecutor {
 
         // At nothing borrowed, liquidity rate should be 0, variable rate should be 3% and stable rate should be 16%.
         assertEq(liqRate, 0);
-        assertEq(stableRate, 16 * (AaveV2Helpers.RAY / 100));
-        assertEq(varRate, 3 * (AaveV2Helpers.RAY / 100));
+        assertEq(stableRate, 16 * (RAY / 100));
+        assertEq(varRate, 3 * (RAY / 100));
     }
 
     function testUtilizationAtOneHundredPercentPolygonV3() public {
@@ -141,8 +139,8 @@ contract ProposalPayloadV3E2ETest is ProtocolV3TestBase, TestWithExecutor {
 
         // At max borrowed, variable rate should be 317% and stable rate should be 16%. (No stable borrowing on CRV)
         assertEq(liqRate, 2536000000000000000000000000);
-        assertEq(stableRate, 16 * (AaveV2Helpers.RAY / 100));
-        assertEq(varRate, 317 * (AaveV2Helpers.RAY / 100));
+        assertEq(stableRate, 16 * (RAY / 100));
+        assertEq(varRate, 317 * (RAY / 100));
     }
 
     function testUtilizationAtUOptimalPolygonV3() public {
@@ -163,7 +161,7 @@ contract ProposalPayloadV3E2ETest is ProtocolV3TestBase, TestWithExecutor {
 
         // At UOptimal, stable rate should be 16% and variable rate should be 17%.
         assertEq(liqRate, 95200000000000000000000000);
-        assertEq(stableRate, 16 * (AaveV2Helpers.RAY / 100));
-        assertEq(varRate, 17 * (AaveV2Helpers.RAY / 100));
+        assertEq(stableRate, 16 * (RAY / 100));
+        assertEq(varRate, 17 * (RAY / 100));
     }
 }
