@@ -22,7 +22,7 @@ contract ProposalPayloadV3E2ETest is ProtocolV3TestBase, TestWithExecutor {
 
     // Old Strategies
     IDefaultInterestRateStrategy public constant OLD_INTEREST_RATE_STRATEGY_V3_POLYGON =
-        IDefaultInterestRateStrategy(0x03733F4E008d36f2e37F0080fF1c8DF756622E6F);
+        IDefaultInterestRateStrategy(AaveV3PolygonAssets.CRV_INTEREST_RATE_STRATEGY);
 
     // New Strategies
     address public NEW_INTEREST_RATE_STRATEGY_POLYGON_V3;
@@ -34,7 +34,7 @@ contract ProposalPayloadV3E2ETest is ProtocolV3TestBase, TestWithExecutor {
     IDefaultInterestRateStrategy public strategyPolygonV3;
 
     function setUp() public {
-        polygonFork = vm.createFork(vm.rpcUrl("polygon"), 38998033);
+        polygonFork = vm.createFork(vm.rpcUrl("polygon"), 39264578);
 
         // Deploy Payloads
         vm.selectFork(polygonFork);
@@ -88,9 +88,9 @@ contract ProposalPayloadV3E2ETest is ProtocolV3TestBase, TestWithExecutor {
                 addressesProvider: address(AaveV3Polygon.POOL_ADDRESSES_PROVIDER),
                 optimalUsageRatio: 70 * (RAY / 100),
                 optimalStableToTotalDebtRatio: 20 * (RAY / 100),
-                baseStableBorrowRate: 16 * (RAY / 100),
-                stableRateSlope1: OLD_INTEREST_RATE_STRATEGY_V3_POLYGON.getStableRateSlope1(),
-                stableRateSlope2: OLD_INTEREST_RATE_STRATEGY_V3_POLYGON.getStableRateSlope2(),
+                baseStableBorrowRate: 17 * (RAY / 100),
+                stableRateSlope1: 8 * (RAY / 100),
+                stableRateSlope2: 300 * (RAY / 100),
                 baseVariableBorrowRate: 3 * (RAY / 100),
                 variableRateSlope1: 14 * (RAY / 100),
                 variableRateSlope2: 300 * (RAY / 100)
@@ -116,9 +116,9 @@ contract ProposalPayloadV3E2ETest is ProtocolV3TestBase, TestWithExecutor {
         });
         (uint256 liqRate, uint256 stableRate, uint256 varRate) = strategyPolygonV3.calculateInterestRates(params);
 
-        // At nothing borrowed, liquidity rate should be 0, variable rate should be 3% and stable rate should be 16%.
+        // At nothing borrowed, liquidity rate should be 0, variable rate should be 3% and stable rate should be 17%.
         assertEq(liqRate, 0);
-        assertEq(stableRate, 16 * (RAY / 100));
+        assertEq(stableRate, 17 * (RAY / 100));
         assertEq(varRate, 3 * (RAY / 100));
     }
 
@@ -127,7 +127,7 @@ contract ProposalPayloadV3E2ETest is ProtocolV3TestBase, TestWithExecutor {
         DataTypes.CalculateInterestRatesParams memory params = DataTypes.CalculateInterestRatesParams({
             unbacked: 0,
             liquidityAdded: 0,
-            liquidityTaken: 518119695691228990473501,
+            liquidityTaken: 500724331412444161645425,
             totalStableDebt: 0,
             totalVariableDebt: 5e18,
             averageStableBorrowRate: 0,
@@ -139,7 +139,7 @@ contract ProposalPayloadV3E2ETest is ProtocolV3TestBase, TestWithExecutor {
 
         // At max borrowed, variable rate should be 317% and stable rate should be 16%. (No stable borrowing on CRV)
         assertEq(liqRate, 2536000000000000000000000000);
-        assertEq(stableRate, 16 * (RAY / 100));
+        assertEq(stableRate, 325 * (RAY / 100));
         assertEq(varRate, 317 * (RAY / 100));
     }
 
@@ -147,10 +147,10 @@ contract ProposalPayloadV3E2ETest is ProtocolV3TestBase, TestWithExecutor {
         vm.selectFork(polygonFork);
         DataTypes.CalculateInterestRatesParams memory params = DataTypes.CalculateInterestRatesParams({
             unbacked: 0,
-            liquidityAdded: 1880304308771009526499,
-            liquidityTaken: 364000000000000000000000,
+            liquidityAdded: 275668587555838354575,
+            liquidityTaken: 350700000000000000000000,
             totalStableDebt: 0,
-            totalVariableDebt: 364000000000000000000000,
+            totalVariableDebt: 350700000000000000000000,
             averageStableBorrowRate: 0,
             reserveFactor: 2000,
             reserve: CRV_POLYGON,
@@ -159,9 +159,9 @@ contract ProposalPayloadV3E2ETest is ProtocolV3TestBase, TestWithExecutor {
 
         (uint256 liqRate, uint256 stableRate, uint256 varRate) = strategyPolygonV3.calculateInterestRates(params);
 
-        // At UOptimal, stable rate should be 16% and variable rate should be 17%.
+        // At UOptimal, stable rate should be 25% and variable rate should be 17%.
         assertEq(liqRate, 95200000000000000000000000);
-        assertEq(stableRate, 16 * (RAY / 100));
+        assertEq(stableRate, 25 * (RAY / 100));
         assertEq(varRate, 17 * (RAY / 100));
     }
 }

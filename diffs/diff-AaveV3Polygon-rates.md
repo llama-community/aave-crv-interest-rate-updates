@@ -1,13 +1,13 @@
 ```diff
-diff --git a/./src/etherscan/polygon_0x03733F4E008d36f2e37F0080fF1c8DF756622E6F/Flattened.sol b/./src/etherscan/polygon_0x04c28D6fE897859153eA753f986cc249Bf064f71/Flattened.sol
+diff --git a/./src/etherscan/polygon_0x03733F4E008d36f2e37F0080fF1c8DF756622E6F/Flattened.sol b/./src/etherscan/polygon_0xBefcd01681224555b74eAC87207eaF9Bc3361F59/Flattened.sol
 index 2c97dab..bb9060a 100644
 --- a/./src/etherscan/polygon_0x03733F4E008d36f2e37F0080fF1c8DF756622E6F/Flattened.sol
-+++ b/./src/etherscan/polygon_0x04c28D6fE897859153eA753f986cc249Bf064f71/Flattened.sol
++++ b/./src/etherscan/polygon_0xBefcd01681224555b74eAC87207eaF9Bc3361F59/Flattened.sol
 @@ -1,5 +1,5 @@
  // SPDX-License-Identifier: BUSL-1.1
 -pragma solidity 0.8.10;
 +pragma solidity ^0.8.0;
- 
+
  /**
   * @dev Interface of the ERC20 standard as defined in the EIP.
 @@ -86,7 +86,7 @@ interface IERC20 {
@@ -103,7 +103,7 @@ index 2c97dab..bb9060a 100644
 @@ -528,31 +528,117 @@ library DataTypes {
    }
  }
- 
+
 +/**
 + * @title Errors library
 + * @author Aave
@@ -247,7 +247,7 @@ index 2c97dab..bb9060a 100644
 -   **/
 +   */
    function getMarketId() external view returns (string memory);
- 
+
    /**
 @@ -704,27 +790,27 @@ interface IPoolAddressesProvider {
    /**
@@ -256,7 +256,7 @@ index 2c97dab..bb9060a 100644
 -   **/
 +   */
    function getPool() external view returns (address);
- 
+
    /**
     * @notice Updates the implementation of the Pool, or creates a proxy
     * setting the new `pool` implementation when the function is called for the first time.
@@ -264,14 +264,14 @@ index 2c97dab..bb9060a 100644
 -   **/
 +   */
    function setPoolImpl(address newPoolImpl) external;
- 
+
    /**
     * @notice Returns the address of the PoolConfigurator proxy.
     * @return The PoolConfigurator proxy address
 -   **/
 +   */
    function getPoolConfigurator() external view returns (address);
- 
+
    /**
     * @notice Updates the implementation of the PoolConfigurator, or creates a proxy
     * setting the new `PoolConfigurator` implementation when the function is called for the first time.
@@ -279,7 +279,7 @@ index 2c97dab..bb9060a 100644
 -   **/
 +   */
    function setPoolConfiguratorImpl(address newPoolConfiguratorImpl) external;
- 
+
    /**
 @@ -748,7 +834,7 @@ interface IPoolAddressesProvider {
    /**
@@ -288,7 +288,7 @@ index 2c97dab..bb9060a 100644
 -   **/
 +   */
    function setACLManager(address newAclManager) external;
- 
+
    /**
 @@ -772,7 +858,7 @@ interface IPoolAddressesProvider {
    /**
@@ -297,7 +297,7 @@ index 2c97dab..bb9060a 100644
 -   **/
 +   */
    function setPriceOracleSentinel(address newPriceOracleSentinel) external;
- 
+
    /**
 @@ -784,106 +870,100 @@ interface IPoolAddressesProvider {
    /**
@@ -307,7 +307,7 @@ index 2c97dab..bb9060a 100644
 +   */
    function setPoolDataProvider(address newDataProvider) external;
  }
- 
+
  /**
 - * @title Errors library
 + * @title IDefaultInterestRateStrategy
@@ -492,7 +492,7 @@ index 2c97dab..bb9060a 100644
 +   */
 +  function getMaxVariableBorrowRate() external view returns (uint256);
  }
- 
+
  /**
 @@ -894,35 +974,21 @@ library Errors {
   * point of usage and another from that one to 100%.
@@ -504,21 +504,21 @@ index 2c97dab..bb9060a 100644
 +contract DefaultReserveInterestRateStrategy is IDefaultInterestRateStrategy {
    using WadRayMath for uint256;
    using PercentageMath for uint256;
- 
+
 -  /**
 -   * @dev This constant represents the usage ratio at which the pool aims to obtain most competitive borrow rates.
 -   * Expressed in ray
 -   **/
 +  /// @inheritdoc IDefaultInterestRateStrategy
    uint256 public immutable OPTIMAL_USAGE_RATIO;
- 
+
 -  /**
 -   * @dev This constant represents the optimal stable debt to total debt ratio of the reserve.
 -   * Expressed in ray
 -   */
 +  /// @inheritdoc IDefaultInterestRateStrategy
    uint256 public immutable OPTIMAL_STABLE_TO_TOTAL_DEBT_RATIO;
- 
+
 -  /**
 -   * @dev This constant represents the excess usage ratio above the optimal. It's always equal to
 -   * 1-optimal usage ratio. Added as a constant here for gas optimizations.
@@ -526,7 +526,7 @@ index 2c97dab..bb9060a 100644
 -   **/
 +  /// @inheritdoc IDefaultInterestRateStrategy
    uint256 public immutable MAX_EXCESS_USAGE_RATIO;
- 
+
 -  /**
 -   * @dev This constant represents the excess stable debt ratio above the optimal. It's always equal to
 -   * 1-optimal stable to total debt ratio. Added as a constant here for gas optimizations.
@@ -534,12 +534,12 @@ index 2c97dab..bb9060a 100644
 -   **/
 +  /// @inheritdoc IDefaultInterestRateStrategy
    uint256 public immutable MAX_EXCESS_STABLE_TO_TOTAL_DEBT_RATIO;
- 
+
    IPoolAddressesProvider public immutable ADDRESSES_PROVIDER;
 @@ -992,65 +1058,42 @@ contract DefaultReserveInterestRateStrategy is IReserveInterestRateStrategy {
      _stableRateExcessOffset = stableRateExcessOffset;
    }
- 
+
 -  /**
 -   * @notice Returns the variable rate slope below optimal usage ratio
 -   * @dev Its the variable rate when usage ratio > 0 and <= OPTIMAL_USAGE_RATIO
@@ -549,7 +549,7 @@ index 2c97dab..bb9060a 100644
    function getVariableRateSlope1() external view returns (uint256) {
      return _variableRateSlope1;
    }
- 
+
 -  /**
 -   * @notice Returns the variable rate slope above optimal usage ratio
 -   * @dev Its the variable rate when usage ratio > OPTIMAL_USAGE_RATIO
@@ -559,7 +559,7 @@ index 2c97dab..bb9060a 100644
    function getVariableRateSlope2() external view returns (uint256) {
      return _variableRateSlope2;
    }
- 
+
 -  /**
 -   * @notice Returns the stable rate slope below optimal usage ratio
 -   * @dev Its the stable rate when usage ratio > 0 and <= OPTIMAL_USAGE_RATIO
@@ -569,7 +569,7 @@ index 2c97dab..bb9060a 100644
    function getStableRateSlope1() external view returns (uint256) {
      return _stableRateSlope1;
    }
- 
+
 -  /**
 -   * @notice Returns the stable rate slope above optimal usage ratio
 -   * @dev Its the variable rate when usage ratio > OPTIMAL_USAGE_RATIO
@@ -579,7 +579,7 @@ index 2c97dab..bb9060a 100644
    function getStableRateSlope2() external view returns (uint256) {
      return _stableRateSlope2;
    }
- 
+
 -  /**
 -   * @notice Returns the stable rate excess offset
 -   * @dev An additional premium applied to the stable when stable debt > OPTIMAL_STABLE_TO_TOTAL_DEBT_RATIO
@@ -589,7 +589,7 @@ index 2c97dab..bb9060a 100644
    function getStableRateExcessOffset() external view returns (uint256) {
      return _stableRateExcessOffset;
    }
- 
+
 -  /**
 -   * @notice Returns the base stable borrow rate
 -   * @return The base stable borrow rate
@@ -598,13 +598,13 @@ index 2c97dab..bb9060a 100644
    function getBaseStableBorrowRate() public view returns (uint256) {
      return _variableRateSlope1 + _baseStableRateOffset;
    }
- 
+
 -  /// @inheritdoc IReserveInterestRateStrategy
 +  /// @inheritdoc IDefaultInterestRateStrategy
    function getBaseVariableBorrowRate() external view override returns (uint256) {
      return _baseVariableBorrowRate;
    }
- 
+
 -  /// @inheritdoc IReserveInterestRateStrategy
 +  /// @inheritdoc IDefaultInterestRateStrategy
    function getMaxVariableBorrowRate() external view override returns (uint256) {
@@ -612,7 +612,7 @@ index 2c97dab..bb9060a 100644
    }
 @@ -1068,8 +1111,8 @@ contract DefaultReserveInterestRateStrategy is IReserveInterestRateStrategy {
    }
- 
+
    /// @inheritdoc IReserveInterestRateStrategy
 -  function calculateInterestRates(DataTypes.CalculateInterestRatesParams calldata params)
 -    external

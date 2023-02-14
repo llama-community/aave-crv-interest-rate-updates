@@ -1,8 +1,8 @@
 ```diff
-diff --git a/./src/etherscan/polygon_0x9025C2d672afA29f43cB59b3035CaCfC401F5D62/Flattened.sol b/./src/etherscan/polygon_0x0294920FaA5a021a63A7056611Be1beBc7C5A028/Flattened.sol
+diff --git a/./src/etherscan/polygon_0xBD67eB7e00f43DAe9e3d51f7d509d4730Fe5988e/Flattened.sol b/./src/etherscan/polygon_0x334c59E5a50932a3C34AC39AB12131C648Cc1aE8/Flattened.sol
 index b0fdc42..809beb9 100644
---- a/./src/etherscan/polygon_0x9025C2d672afA29f43cB59b3035CaCfC401F5D62/Flattened.sol
-+++ b/./src/etherscan/polygon_0x0294920FaA5a021a63A7056611Be1beBc7C5A028/Flattened.sol
+--- a/./src/etherscan/polygon_0xBD67eB7e00f43DAe9e3d51f7d509d4730Fe5988e/Flattened.sol
++++ b/./src/etherscan/polygon_0x334c59E5a50932a3C34AC39AB12131C648Cc1aE8/Flattened.sol
 @@ -1,7 +1,3 @@
 -// Sources flattened with hardhat v2.6.5 https://hardhat.org
 -
@@ -10,11 +10,11 @@ index b0fdc42..809beb9 100644
 -
  // SPDX-License-Identifier: agpl-3.0
  pragma solidity 0.6.12;
-
+ 
 @@ -166,10 +162,6 @@ library SafeMath {
    }
  }
-
+ 
 -
 -// File contracts/interfaces/IReserveInterestRateStrategy.sol
 -
@@ -25,7 +25,7 @@ index b0fdc42..809beb9 100644
 @@ -215,10 +207,6 @@ interface IReserveInterestRateStrategy {
      );
  }
-
+ 
 -
 -// File contracts/protocol/libraries/helpers/Errors.sol
 -
@@ -36,7 +36,7 @@ index b0fdc42..809beb9 100644
 @@ -336,10 +324,6 @@ library Errors {
    }
  }
-
+ 
 -
 -// File contracts/protocol/libraries/math/WadRayMath.sol
 -
@@ -47,7 +47,7 @@ index b0fdc42..809beb9 100644
 @@ -471,10 +455,6 @@ library WadRayMath {
    }
  }
-
+ 
 -
 -// File contracts/protocol/libraries/math/PercentageMath.sol
 -
@@ -58,7 +58,7 @@ index b0fdc42..809beb9 100644
 @@ -525,10 +505,6 @@ library PercentageMath {
    }
  }
-
+ 
 -
 -// File contracts/interfaces/ILendingPoolAddressesProvider.sol
 -
@@ -69,7 +69,7 @@ index b0fdc42..809beb9 100644
 @@ -587,10 +563,6 @@ interface ILendingPoolAddressesProvider {
    function setLendingRateOracle(address lendingRateOracle) external;
  }
-
+ 
 -
 -// File contracts/interfaces/ILendingRateOracle.sol
 -
@@ -80,7 +80,7 @@ index b0fdc42..809beb9 100644
 @@ -608,10 +580,6 @@ interface ILendingRateOracle {
    function setMarketBorrowRate(address asset, uint256 rate) external;
  }
-
+ 
 -
 -// File contracts/dependencies/openzeppelin/contracts/IERC20.sol
 -
@@ -91,7 +91,7 @@ index b0fdc42..809beb9 100644
 @@ -690,16 +658,6 @@ interface IERC20 {
    event Approval(address indexed owner, address indexed spender, uint256 value);
  }
-
+ 
 -
 -// File contracts/protocol/lendingpool/DefaultReserveInterestRateStrategy.sol
 -

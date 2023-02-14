@@ -12,8 +12,8 @@ import {AaveV3Polygon, AaveV3PolygonAssets} from "aave-address-book/AaveV3Polygo
  * Snapshot: https://snapshot.org/#/aave.eth/proposal/0x56aaf192f5cad8277b0e7c82abad030c62bb8fcfe4f2640ce5b896ab04397c20
  */
 contract ProposalPayloadPolygon {
-    address public constant INTEREST_RATE_STRATEGY_V3 = 0x04c28D6fE897859153eA753f986cc249Bf064f71;
-    address public constant INTEREST_RATE_STRATEGY = 0x0294920FaA5a021a63A7056611Be1beBc7C5A028;
+    address public constant INTEREST_RATE_STRATEGY_V3 = 0xBefcd01681224555b74eAC87207eaF9Bc3361F59;
+    address public constant INTEREST_RATE_STRATEGY = 0x334c59E5a50932a3C34AC39AB12131C648Cc1aE8;
     uint256 public constant NEW_BORROW_CAP_V3 = 900_190;
     uint256 public constant NEW_SUPPLY_CAP_V3 = 1_125_240;
     uint256 public constant NEW_RESERVE_FACTOR = 2000;
