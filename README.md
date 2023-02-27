@@ -8,17 +8,17 @@ The code is split in two proposals, one for Mainnet and one for Polygon. The Pro
 
 1. Sets the new interest rate strategy address.
 
-The new interest rate strategy is deployed here: https://etherscan.io/address/0x04c28D6fE897859153eA753f986cc249Bf064f71
+The new interest rate strategy is deployed here: https://etherscan.io/address/0xA4C2C730A4c01c64d54ce0165c27120989A3C743
 
 The Proposal Payload for Polygon does the following:
 
 1. Sets the new interest rate strategy address for v2.
 
-The new interest rate strategy is deployed here: https://etherscan.io/address/0x80cb7e9E015C5331bF34e06de62443d070FD6654
+The new interest rate strategy is deployed here: https://polygonscan.com/address/0xE4621DfD503A533f42bB5a45162eA3e5233Acd5F
 
 2. Sets the new interest rate strategy address for v3.
 
-The new interest rate strategy is deployed here: https://etherscan.io/address/0x4b8D3277d49E114C8F2D6E0B2eD310e29226fe16
+The new interest rate strategy is deployed here: https://polygonscan.com/address/0xBefcd01681224555b74eAC87207eaF9Bc3361F59
 
 3. Sets the borrow cap for v3 at: 900,190.
 
@@ -32,7 +32,7 @@ The interest rate changes are as follows:
 ==========================================
 | Parameter	   Current (%)	Proposed (%)
 ==========================================
-| Uoptimal	  |   45       |  75     |
+| Uoptimal	  |   45       |  45     |
 ------------------------------------------
 | Base	          |   0        |  3      |
 ------------------------------------------
@@ -49,6 +49,8 @@ V2 Pools
 | StableSlope2 |   300      |   300      |
 ------------------------------------------
 V3 Pools
+------------------------------------------
+| Uoptimal	  |   45       |  70     |
 ------------------------------------------
 | StableSlope1 |   0.0      |   8.0      |
 ------------------------------------------
