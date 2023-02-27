@@ -41,8 +41,8 @@ contract ProposalPayloadV2E2ETest is ProtocolV2TestBase, TestWithExecutor {
     IDefaultInterestRateStrategy public strategyPolygon;
 
     function setUp() public {
-        mainnetFork = vm.createFork(vm.rpcUrl("mainnet"), 16623608);
-        polygonFork = vm.createFork(vm.rpcUrl("polygon"), 39264578);
+        mainnetFork = vm.createFork(vm.rpcUrl("mainnet"), 16722387);
+        polygonFork = vm.createFork(vm.rpcUrl("polygon"), 39781949);
 
         // Deploy Payloads
         vm.selectFork(polygonFork);
@@ -92,7 +92,7 @@ contract ProposalPayloadV2E2ETest is ProtocolV2TestBase, TestWithExecutor {
             ProposalPayload(proposalPayload).INTEREST_RATE_STRATEGY(),
             InterestStrategyValues({
                 addressesProvider: address(AaveV2Ethereum.POOL_ADDRESSES_PROVIDER),
-                optimalUsageRatio: 70 * (RAY / 100),
+                optimalUsageRatio: 45 * (RAY / 100),
                 baseVariableBorrowRate: 3 * (RAY / 100),
                 stableRateSlope1: 17 * (RAY / 100),
                 stableRateSlope2: 300 * (RAY / 100),
@@ -139,7 +139,7 @@ contract ProposalPayloadV2E2ETest is ProtocolV2TestBase, TestWithExecutor {
             ProposalPayloadPolygon(proposalPayloadPolygon).INTEREST_RATE_STRATEGY(),
             InterestStrategyValues({
                 addressesProvider: address(AaveV2Polygon.POOL_ADDRESSES_PROVIDER),
-                optimalUsageRatio: 70 * (RAY / 100),
+                optimalUsageRatio: 45 * (RAY / 100),
                 baseVariableBorrowRate: 3 * (RAY / 100),
                 stableRateSlope1: 17 * (RAY / 100),
                 stableRateSlope2: 300 * (RAY / 100),
@@ -188,15 +188,15 @@ contract ProposalPayloadV2E2ETest is ProtocolV2TestBase, TestWithExecutor {
     function testUtilizationAtUOptimalEthereum() public {
         (uint256 liqRate, uint256 stableRate, uint256 varRate) = strategy.calculateInterestRates(
             CRV,
-            30 * 1e18,
+            55 * 1e18,
             0,
-            70 * 1e18,
+            45 * 1e18,
             68200000000000000000000000,
             2000
         );
 
         // At UOptimal, stable rate should be 13% and variable rate should be 17%.
-        assertEq(liqRate, 95200000000000000000000000);
+        assertEq(liqRate, 61200000000000000000000000);
         assertEq(stableRate, 20 * (RAY / 100));
         assertEq(varRate, 17 * (RAY / 100));
     }
@@ -241,15 +241,15 @@ contract ProposalPayloadV2E2ETest is ProtocolV2TestBase, TestWithExecutor {
         vm.selectFork(polygonFork);
         (uint256 liqRate, uint256 stableRate, uint256 varRate) = strategyPolygon.calculateInterestRates(
             CRV_POLYGON,
-            30 * 1e18,
+            55 * 1e18,
             0,
-            70 * 1e18,
+            45 * 1e18,
             68200000000000000000000000,
             2000
         );
 
         // At UOptimal, stable rate should be 17% and variable rate should be 17%.
-        assertEq(liqRate, 95200000000000000000000000);
+        assertEq(liqRate, 61200000000000000000000000);
         assertEq(stableRate, 17 * (RAY / 100));
         assertEq(varRate, 17 * (RAY / 100));
     }
