@@ -8,6 +8,12 @@ libs = ['lib']
 src = 'src'
 test = 'test'
 out = 'out'
+fs_permissions = [{access = "write", path = "./reports"}, {access = "write", path="./src/etherscan/*"}]
 
 [rpc_endpoints]
 mainnet = "${RPC_MAINNET_URL}"
+polygon = "${RPC_POLYGON_URL}"
+
+[etherscan]
+mainnet={key="${ETHERSCAN_API_KEY}",chainId=1}
+polygon={key="${POLYGONSCAN_API_KEY}",chainId=137}
