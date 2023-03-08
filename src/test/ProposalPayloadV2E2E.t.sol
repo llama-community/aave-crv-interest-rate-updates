@@ -179,7 +179,7 @@ contract ProposalPayloadV2E2ETest is ProtocolV2TestBase, TestWithExecutor {
             2000
         );
 
-        // At max borrow rate, stable rate should be 313% and variable rate should be 317%.
+        // At max borrow rate, stable rate should be 320% and variable rate should be 317%.
         assertEq(liqRate, 2536000000000000000000000000);
         assertEq(stableRate, 3200000000000000000000000000);
         assertEq(varRate, 3170000000000000000000000000);
@@ -195,7 +195,7 @@ contract ProposalPayloadV2E2ETest is ProtocolV2TestBase, TestWithExecutor {
             2000
         );
 
-        // At UOptimal, stable rate should be 13% and variable rate should be 17%.
+        // At UOptimal, stable rate should be 20% and variable rate should be 17%.
         assertEq(liqRate, 61200000000000000000000000);
         assertEq(stableRate, 20 * (RAY / 100));
         assertEq(varRate, 17 * (RAY / 100));
